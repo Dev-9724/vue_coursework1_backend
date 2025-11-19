@@ -1,5 +1,5 @@
 // server.js
-require('dotenv').config(); // load .env first
+require('dotenv').config(); 
 
 const express = require('express');
 const cors = require('cors');
@@ -45,7 +45,6 @@ MongoClient.connect(uri)
             res.send('Backend + MongoDB are working ✅');
         });
 
-        // GET /lessons - return all lessons from MongoDB
         // GET /lessons - return all lessons from MongoDB
         app.get('/lessons', async (req, res) => {
             try {
