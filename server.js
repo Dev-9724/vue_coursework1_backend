@@ -1,5 +1,5 @@
 // server.js
-require('dotenv').config(); 
+require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
@@ -53,10 +53,10 @@ MongoClient.connect(uri)
                 // convert _id to string and normalise field names for frontend
                 const formatted = lessons.map(l => ({
                     _id: l._id.toString(),
-                    subject: l.topic,                 
+                    subject: l.topic,
                     location: l.location,
                     price: l.price,
-                    spaces: l.spaces ?? l.space,      
+                    spaces: l.spaces ?? l.space,
                     rating: l.rating ?? 0,
                     image: l.image
                 }));
@@ -135,9 +135,15 @@ MongoClient.connect(uri)
     .catch(err => {
         console.error('Failed to connect to MongoDB:', err);
     });
+// 404 handler – for any route that didn't match above
+app.use((req, res) => {
+    res.status(404).json({ error: 'Resource not found' });
+});
+
 // Global error handler (in case any route calls next(err))
 app.use((err, req, res, next) => {
     console.error('Unhandled error:', err);
     res.status(500).json({ error: 'Something went wrong on the server' });
 });
+
 
