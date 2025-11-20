@@ -125,6 +125,17 @@ MongoClient.connect(uri)
             }
         });
 
+        // 404 handler – must be AFTER all routes
+        app.use((req, res) => {
+            res.status(404).json({ error: 'Resource not found' });
+        });
+
+        // Global error handler
+        app.use((err, req, res, next) => {
+            console.error('Unhandled error:', err);
+            res.status(500).json({ error: 'Something went wrong on the server' });
+        });
+
 
         // ----- START SERVER -----
         const port = process.env.PORT || 3000;
@@ -135,15 +146,5 @@ MongoClient.connect(uri)
     .catch(err => {
         console.error('Failed to connect to MongoDB:', err);
     });
-// 404 handler – for any route that didn't match above
-app.use((req, res) => {
-    res.status(404).json({ error: 'Resource not found' });
-});
-
-// Global error handler (in case any route calls next(err))
-app.use((err, req, res, next) => {
-    console.error('Unhandled error:', err);
-    res.status(500).json({ error: 'Something went wrong on the server' });
-});
 
 
