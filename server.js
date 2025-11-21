@@ -138,18 +138,32 @@ MongoClient.connect(uri)
             try {
                 const order = req.body;
 
-                // allow phoneNumber OR phone
-                order.phone = order.phone || order.phoneNumber;
+                const name = order.name;
+                const phone = order.phone || order.phoneNumber;
+                const lessonIDs = order.lessonIDs;
+                const quantities = order.quantities;
 
-                if (!order.name || !order.phone || !Array.isArray(order.lessonIDs)) {
+                if (!name || !phone || !Array.isArray(lessonIDs) || !Array.isArray(quantities)) {
                     return res.status(400).json({ error: 'Invalid order data' });
                 }
 
-                const result = await ordersCollection.insertOne(order);
+                if (lessonIDs.length !== quantities.length) {
+                    return res.status(400).json({ error: 'Lesson IDs and quantities mismatch' });
+                }
+
+                const formatted = {
+                    name,
+                    phone,
+                    lessonIDs,
+                    quantities,
+                    createdAt: new Date()
+                };
+
+                const result = await ordersCollection.insertOne(formatted);
 
                 res.status(201).json({
                     message: 'Order created',
-                    orderId: result.insertedId,
+                    orderId: result.insertedId
                 });
             } catch (err) {
                 console.error('Error creating order:', err);
