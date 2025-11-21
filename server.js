@@ -19,7 +19,7 @@ app.use((req, res, next) => {
 });
 
 // serve static images from /images folder
-const imagesPath = path.join(__dirname, 'images');
+const imagesPath = path.join(__dirname, 'Images');
 app.use('/images', express.static(imagesPath));
 
 // ----- DB SETUP -----
