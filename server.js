@@ -68,6 +68,38 @@ MongoClient.connect(uri)
             }
         });
 
+        // GET /lessons/:id - return single lesson
+        app.get('/lessons/:id', async (req, res) => {
+            try {
+                const id = req.params.id;
+
+                if (!ObjectId.isValid(id)) {
+                    return res.status(400).json({ error: 'Invalid lesson id' });
+                }
+
+                const lesson = await lessonsCollection.findOne({ _id: new ObjectId(id) });
+
+                if (!lesson) {
+                    return res.status(404).json({ error: 'Lesson not found' });
+                }
+
+                const formatted = {
+                    _id: lesson._id.toString(),
+                    subject: lesson.subject ?? lesson.topic,
+                    location: lesson.location,
+                    price: lesson.price,
+                    spaces: lesson.spaces ?? lesson.space,
+                    rating: lesson.rating ?? 0,
+                    image: lesson.image
+                };
+
+                res.json(formatted);
+            } catch (err) {
+                console.error('Error fetching lesson by id:', err);
+                res.status(500).json({ error: 'Failed to fetch lesson' });
+            }
+        });
+
 
         // PUT /lessons/:id - update a lesson (e.g. spaces)
         app.put('/lessons/:id', async (req, res) => {
