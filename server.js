@@ -9,7 +9,6 @@ const { MongoClient, ObjectId } = require('mongodb');
 const app = express();
 
 // ----- MIDDLEWARE -----
-import cors from "cors";
 
 // Allowed frontend domains
 const allowedOrigins = [
