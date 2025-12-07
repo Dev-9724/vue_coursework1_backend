@@ -157,7 +157,6 @@ MongoClient.connect(uri)
             }
         });
 
-
         // POST /orders - create a new order
         app.post('/orders', async (req, res) => {
             try {
@@ -168,6 +167,7 @@ MongoClient.connect(uri)
                 const lessonIDs = order.lessonIDs;
                 const quantities = order.quantities;
 
+                // ----- BASIC PRESENCE CHECKS -----
                 if (!name || !phone || !Array.isArray(lessonIDs) || !Array.isArray(quantities)) {
                     return res.status(400).json({ error: 'Invalid order data' });
                 }
@@ -176,9 +176,34 @@ MongoClient.connect(uri)
                     return res.status(400).json({ error: 'Lesson IDs and quantities mismatch' });
                 }
 
+                // ----- NAME VALIDATION -----
+                const trimmedName = String(name).trim();
+
+                // Only letters, spaces, apostrophes, hyphens, min 2 chars
+                const nameRegex = /^[A-Za-z\s'-]{2,40}$/;
+
+                if (!nameRegex.test(trimmedName)) {
+                    return res.status(400).json({
+                        error: 'Invalid name. Please use letters and spaces only.'
+                    });
+                }
+
+                // ----- PHONE VALIDATION -----
+                const phoneStr = String(phone).trim();
+
+                // 10–15 digits only (adjust to your requirements)
+                const phoneRegex = /^[0-9]{10,15}$/;
+
+                if (!phoneRegex.test(phoneStr)) {
+                    return res.status(400).json({
+                        error: 'Invalid phone number. Please use digits only (10–15 digits).'
+                    });
+                }
+
+                // ----- BUILD ORDER DOCUMENT -----
                 const formatted = {
-                    name,
-                    phone,
+                    name: trimmedName,
+                    phone: phoneStr,
                     lessonIDs,
                     quantities,
                     createdAt: new Date()
@@ -195,6 +220,7 @@ MongoClient.connect(uri)
                 res.status(500).json({ error: 'Failed to create order' });
             }
         });
+
 
         // 404 handler – must be AFTER all routes
         app.use((req, res) => {
