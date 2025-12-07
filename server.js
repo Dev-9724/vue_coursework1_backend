@@ -9,7 +9,32 @@ const { MongoClient, ObjectId } = require('mongodb');
 const app = express();
 
 // ----- MIDDLEWARE -----
-app.use(cors());
+import cors from "cors";
+
+// Allowed frontend domains
+const allowedOrigins = [
+    "https://dev-9724.github.io",                   // your GitHub Pages frontend
+    "http://localhost:5173",                       // Vite local dev
+    "http://127.0.0.1:5173"
+];
+
+app.use(
+    cors({
+        origin: function (origin, callback) {
+            // allow requests with no origin (like mobile apps, curl, Postman)
+            if (!origin) return callback(null, true);
+
+            if (allowedOrigins.indexOf(origin) === -1) {
+                return callback(new Error("CORS: This origin is not allowed"), false);
+            }
+            return callback(null, true);
+        },
+        credentials: true,
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"]
+    })
+);
+
 app.use(express.json());
 
 // simple logger
