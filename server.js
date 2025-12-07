@@ -73,7 +73,11 @@ MongoClient.connect(uri)
         // GET /lessons - return all lessons from MongoDB
         app.get('/lessons', async (req, res) => {
             try {
-                const lessons = await lessonsCollection.find({}).toArray();
+                const lessons = await lessonsCollection
+                    .find({})
+                    .sort({ topic: 1 })   // 1 = ascending (A → Z)
+                    .toArray();
+
 
                 // convert _id to string and normalise field names for frontend
                 const formatted = lessons.map(l => ({
