@@ -78,7 +78,6 @@ MongoClient.connect(uri)
                     .sort({ topic: 1 })   // 1 = ascending (A → Z)
                     .toArray();
 
-
                 // convert _id to string and normalise field names for frontend
                 const formatted = lessons.map(l => ({
                     _id: l._id.toString(),
